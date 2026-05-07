@@ -1,0 +1,424 @@
+VERCEL SERVERLESS SETUP
+
+
+
+SIM 😄🔥
+E essa decisão é MUITO inteligente pro teu aprendizado.
+
+Você vai transformar esse projeto em uma arquitetura moderna tipo:
+
+Angular Frontend
+      ↓
+Vercel Serverless Functions
+      ↓
+WordPress API
+
+Isso traz vantagens enormes:
+
+esconder endpoint real do WP
+evitar CORS
+criar cache
+segurança
+manipular dados
+SEO depois
+middleware
+autenticação futura
+arquitetura profissional headless
+
+E honestamente?
+É exatamente como muitos projetos modernos funcionam hoje.
+
+🚀 O que vamos fazer
+
+Hoje teu Angular chama direto:
+
+https://guiadoeden.com/wp-json/wp/v2/posts
+
+Vamos mudar para:
+
+/api/posts
+
+E o Vercel vai interceptar isso usando Functions Serverless.
+
+✅ ESTRUTURA FINAL
+
+Você terá:
+
+project-root
+│
+├── api
+│   └── posts.ts
+│
+├── src
+│   ├── app
+│   └── environments
+│
+├── vercel.json
+└── package.json
+1️⃣ Criar pasta api
+
+Na raiz do projeto:
+
+api/
+2️⃣ Criar a Function Serverless
+📄 api/posts.ts
+
+Crie:
+
+export default async function handler(
+  req: any,
+  res: any
+) {
+
+  try {
+
+    const response = await fetch(
+      'https://guiadoeden.com/wp-json/wp/v2/posts?_embed'
+    );
+
+    const data = await response.json();
+
+    res.status(200).json(data);
+
+  } catch (error) {
+
+    res.status(500).json({
+      error: 'Erro ao buscar posts'
+    });
+
+  }
+
+}
+🔥 O que isso faz?
+
+Quando acessar:
+
+https://seuprojeto.vercel.app/api/posts
+
+o Vercel executa:
+
+api/posts.ts
+
+automaticamente.
+
+Isso é Serverless Function 😄
+
+3️⃣ Atualizar environment.ts
+
+Agora o frontend NÃO chama mais o WordPress.
+
+📄 environment.ts
+export const environment = {
+
+  production: false,
+
+  apiUrl: '/api'
+
+};
+4️⃣ Atualizar o service
+📄 wordpress.service.ts
+
+Troque:
+
+private apiUrl = `${environment.apiUrl}/posts?_embed`;
+
+por:
+
+private apiUrl = `${environment.apiUrl}/posts`;
+
+Porque agora:
+
+_embed
+já está sendo tratado na Function.
+5️⃣ Criar vercel.json
+
+Na raiz do projeto:
+
+📄 vercel.json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
+⚠️ IMPORTANTE
+
+Esse rewrite evita erro:
+
+ao atualizar página
+usar rotas Angular
+acessar URLs internas
+
+Sem isso:
+
+Vercel quebra SPA Angular.
+6️⃣ Instalar Vercel CLI
+npm i -g vercel
+7️⃣ Login no Vercel
+vercel login
+8️⃣ Deploy
+
+Dentro do projeto:
+
+vercel
+
+Ele perguntará:
+
+nome do projeto
+framework
+build settings
+9️⃣ Configuração Angular no Vercel
+
+Quando perguntar:
+
+Framework
+
+Escolha:
+
+Angular
+Build Command
+ng build
+Output Directory
+dist/NOME-DO-PROJETO/browser
+
+⚠️ Angular moderno gera:
+
+browser
+server
+🔥 RESULTADO FINAL
+
+Seu projeto terá:
+
+✅ Angular Standalone
+✅ WordPress Headless
+✅ Vercel Serverless Functions
+✅ API própria
+✅ Sem CORS
+✅ Arquitetura moderna
+✅ Deploy global CDN
+✅ Escalável
+
+🚀 Próximo nível depois disso
+
+Aí sim você poderá aprender:
+
+SSR
+Angular Universal
+Edge Functions
+ISR
+cache serverless
+autenticação JWT
+CMS headless real
+proteção de API
+rate limiting
+⚠️ MUITO IMPORTANTE SOBRE ANGULAR + VERCEL
+
+Angular às vezes precisa:
+
+📄 package.json
+
+ter:
+
+"engines": {
+  "node": "20.x"
+}
+
+para evitar erro de build.
+
+🔥 Minha recomendação REAL
+
+Seu projeto está PERFEITO para aprender:
+
+Frontend moderno
++
+Headless CMS
++
+Serverless
+
+Isso já é stack profissional de mercado 😄
+
+
+
+
+
+Vou subir este projeto no Github e vou conectar o repo com o Vercel...considerando isto mantemos as suas instruções por inteiro?
+
+
+
+
+Sim — mantemos praticamente tudo, mas com um ajuste importante de mentalidade: no Vercel + GitHub, o fluxo muda de “rodar local e depois subir” para “Git-driven deploy”, então algumas peças precisam ficar mais robustas e previsíveis.
+
+Vou te explicar direto ao ponto 👇
+
+✅ O que continua exatamente igual
+
+Tudo isso que montamos continua válido:
+
+Angular Standalone
+environment.ts
+Service consumindo /api/posts
+api/posts.ts (serverless function)
+Estrutura de components
+Router Angular
+Layout / UI
+
+👉 Isso NÃO muda.
+
+⚠️ O que muda na prática com GitHub + Vercel
+1️⃣ Deploy passa a ser automático
+
+Quando você fizer:
+
+git push origin main
+
+o Vercel vai:
+
+instalar dependências
+rodar build Angular
+publicar automaticamente
+
+👉 você NÃO mais roda vercel manual toda hora.
+
+2️⃣ O build do Angular precisa estar correto
+
+No Vercel isso é CRÍTICO.
+
+Verifique no package.json:
+"scripts": {
+  "build": "ng build"
+}
+3️⃣ Vercel vai detectar Angular automaticamente
+
+Mas se não detectar, você força:
+
+📄 vercel.json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
+👉 Esse rewrite é ESSENCIAL para Angular Router funcionar em produção.
+
+4️⃣ Ajuste importante do Angular build output
+
+Depois do build:
+
+ng build
+
+confira onde sai o build:
+
+dist/seu-projeto/browser
+
+OU às vezes:
+
+dist/seu-projeto
+
+👉 isso depende da versão Angular.
+
+Se der erro no deploy, esse é o ponto #1.
+
+5️⃣ Serverless API continua igual (MAS cuidado aqui)
+
+Sua função:
+
+/api/posts.ts
+
+funciona automaticamente no Vercel.
+
+Mas regra importante:
+
+❗ Em produção, ela NÃO usa Angular
+
+Ela roda isolada no Node serverless.
+
+Então:
+
+não pode usar código Angular
+não pode usar browser APIs
+apenas Node/fetch
+
+Seu código está OK 👍
+
+6️⃣ environment.ts continua, MAS agora ele fica “fixo”
+
+Você mudou para:
+
+apiUrl: '/api'
+
+👉 Isso está PERFEITO para Vercel.
+
+Mas atenção:
+
+Se um dia quiser ambiente dev/prod:
+
+production: true
+
+pode separar depois:
+
+environment.ts
+environment.prod.ts
+7️⃣ GitHub vira fonte da verdade
+
+Estrutura correta:
+
+local → git push → GitHub → Vercel deploy
+
+Então:
+
+❗ nunca mais “ajusta direto no Vercel”
+✔ tudo vem do repo
+
+🚀 Fluxo FINAL (profissional)
+Angular App
+   ↓
+GitHub (main branch)
+   ↓
+Vercel Build
+   ↓
+Serverless Functions (/api)
+   ↓
+WordPress API
+🔥 Resumo honesto
+
+Sim, mantemos tudo — mas com esses ajustes obrigatórios:
+
+✔ vercel.json com rewrite correto
+✔ build Angular confirmado
+✔ output dist validado
+✔ deploy via GitHub (não CLI)
+✔ API serverless intacta
+✔ environment apontando para /api
+
+💡 Dica importante (nível pro mesmo)
+
+Quando isso estiver no ar, você pode evoluir para:
+
+cache na serverless function
+ISR-like behavior
+paginação serverless
+proteção de API (rate limit)
+otimização de payload WP
+edge functions
+
+Se quiser, na próxima etapa posso te guiar em:
+
+👉 deploy completo passo a passo (GitHub → Vercel sem erro nenhum)
+👉 ou já montar sua página de post individual com slug (nível seguinte natural)
+
+Só me fala 😄
